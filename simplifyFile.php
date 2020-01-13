@@ -59,10 +59,11 @@ foreach ($filesToProcess as $file) {
         // Checking validity of file for simplification
         if(file_exists($file["objectPath"]) &&  strtolower($file_extension) != "stl"){
           echo(PHP_EOL."Converting file to stl".PHP_EOL);
-            $stlPath = "tmp/".$file["objectName"].".stl";
-            exec("assimp export ".$file["objectPath"]." ".$stlPath);
+            $stlPath = "/app/tmp/".$file["objectName"].".stl";
+            exec("ctmconv ".$file["objectPath"]." ".$stlPath);
             if(file_exists($stlPath)){
               $file["objectPath"] = $stlPath;
+              // copy($stlPath, $OUTPUTARG.'/'.$file["objectName"].'-converted.stl');
             } else {
               echo("Error unsuported file type for rendering");
               $fp = fopen('/app/files/results.json', 'w');
@@ -85,14 +86,15 @@ foreach ($filesToProcess as $file) {
     $targetSize = $TARGETSIZE * 1048576;
     $fileSize = filesize($file["objectPath"]);
 
-    echo(PHP_EOL."old size : ".$filesize.PHP_EOL);
+    echo(PHP_EOL."old size : ".$fileSize.PHP_EOL);
 
-    $path = "tmp/".$file["objectName"]."-simplified.stl";
+    $path = "/app/tmp/".$file["objectName"]."-simplified.stl";
     $percentageDecrease = 1 - round(($fileSize - $targetSize)/$fileSize, 2, PHP_ROUND_HALF_DOWN);
     echo("Percentage to decrease: ".$percentageDecrease.PHP_EOL);
     exec("/app/a.out ".$file["objectPath"]." ".$path." ".$percentageDecrease);
     
     if (file_exists($path)){
+      // copy($path, $OUTPUTARG.'/'.$file["objectName"].'-simplified.stl');
       echo("new size : ".filesize($path).PHP_EOL);
       array_push($statusJson, [
         "file simplification" => [
@@ -121,11 +123,11 @@ foreach ($filesToProcess as $file) {
     }
 
     // Conversion to PLY and copy to output
-    $stlPath = "tmp/".$file["objectName"]."-simplified.stl";
+    $stlPath = "/app/tmp/".$file["objectName"]."-simplified.stl";
     if($CONVERT){
       echo("Conversion to ply");
-      $plyPath = "tmp/".$file["objectName"]."-simplified.ply";
-      exec("assimp export ".$stlPath." ".$plyPath);
+      $plyPath = "/app/tmp/".$file["objectName"]."-simplified.ply";
+      exec("ctmconv ".$stlPath." ".$plyPath);
 
       copy($plyPath, $OUTPUTARG.'/'.$file["objectName"].'.ply');
     } else {

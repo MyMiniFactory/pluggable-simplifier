@@ -2,7 +2,7 @@
 
 File Simplifier is a docker container to simplify file and optionnaly convert them to ply.
 It uses :
-- [assimp](https://github.com/assimp/assimp) to convert the 3D file to stl (see the `assimp` documentation for the supported file format).
+- [OpenCTM](http://openctm.sourceforge.net/?page=about) to convert the 3D file to stl and optionnaly convert the stl to ply.
 - [Fast-Quadric-Mesh-Simplification](https://github.com/MyMiniFactory/Fast-Quadric-Mesh-Simplification) to simplify the file.
 
 ## Build the container
