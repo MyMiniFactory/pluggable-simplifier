@@ -85,13 +85,16 @@ foreach ($filesToProcess as $file) {
     // Stl simplification under threshold
     $targetSize = $TARGETSIZE * 1048576;
     $fileSize = filesize($file["objectPath"]);
-
-    echo(PHP_EOL."old size : ".$fileSize.PHP_EOL);
-
     $path = "/app/tmp/".$file["objectName"]."-simplified.stl";
-    $percentageDecrease = 1 - round(($fileSize - $targetSize)/$fileSize, 2, PHP_ROUND_HALF_DOWN);
-    echo("Percentage to decrease: ".$percentageDecrease.PHP_EOL);
-    exec("/app/a.out ".$file["objectPath"]." ".$path." ".$percentageDecrease);
+
+    if($fileSize > $targetSize){
+      echo(PHP_EOL."old size : ".$fileSize.PHP_EOL);
+      $percentageDecrease = 1 - round(($fileSize - $targetSize)/$fileSize, 2, PHP_ROUND_HALF_DOWN);
+      echo("Percentage to decrease: ".$percentageDecrease.PHP_EOL);
+      exec("/app/a.out ".$file["objectPath"]." ".$path." ".$percentageDecrease);
+    } else {
+      copy($file["objectPath"], $path);
+    }
     
     if (file_exists($path)){
       // copy($path, $OUTPUTARG.'/'.$file["objectName"].'-simplified.stl');
