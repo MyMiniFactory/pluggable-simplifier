@@ -1,5 +1,7 @@
 # File Simplifier
 
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/myminifactory/pluggable-simplifier)](https://hub.docker.com/r/myminifactory/pluggable-simplifier)
+
 File Simplifier is a docker container to simplify file and optionnaly convert them to ply.
 It uses :
 - [OpenCTM](http://openctm.sourceforge.net/?page=about) to convert the 3D file to stl and optionnaly convert the stl to ply.
