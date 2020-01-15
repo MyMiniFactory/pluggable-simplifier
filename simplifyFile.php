@@ -60,15 +60,25 @@ foreach ($filesToProcess as $file) {
         if(file_exists($file["objectPath"]) &&  strtolower($file_extension) != "stl"){
           echo(PHP_EOL."Converting file to stl".PHP_EOL);
             $stlPath = "/app/tmp/".$file["objectName"].".stl";
-            exec("ctmconv ".$file["objectPath"]." ".$stlPath);
+            exec("ctmconv ".$file["objectPath"]." ".$stlPath,$outputConv);
             if(file_exists($stlPath)){
               $file["objectPath"] = $stlPath;
               // copy($stlPath, $OUTPUTARG.'/'.$file["objectName"].'-converted.stl');
             } else {
-              echo("Error unsuported file type for rendering");
-              $fp = fopen('/app/files/results.json', 'w');
+              echo("Error in conversion : ");
+              var_dump($outputConv);
+              array_push($statusJson, [
+                "file conversion" => [
+                  "status" => "error",
+                  "message" => $outputConv
+                ]
+              ]);
+              $fp = fopen($STATUSARG.'/status.json', 'w');
               fwrite($fp, json_encode($statusJson));
               fclose($fp);
+              $fp = fopen('/app/files/results.json', 'w');
+                    fwrite($fp, json_encode($statusJson));
+                    fclose($fp);
               return 0;
             }
         }
@@ -91,7 +101,7 @@ foreach ($filesToProcess as $file) {
       echo(PHP_EOL."old size : ".$fileSize.PHP_EOL);
       $percentageDecrease = 1 - round(($fileSize - $targetSize)/$fileSize, 2, PHP_ROUND_HALF_DOWN);
       echo("Percentage to decrease: ".$percentageDecrease.PHP_EOL);
-      exec("/app/a.out ".$file["objectPath"]." ".$path." ".$percentageDecrease);
+      exec("/app/a.out ".$file["objectPath"]." ".$path." ".$percentageDecrease,$outputSimp);
     } else {
       copy($file["objectPath"], $path);
     }
@@ -109,11 +119,12 @@ foreach ($filesToProcess as $file) {
       fwrite($fp, json_encode($statusJson));
       fclose($fp);
     } else {
-      echo("Error while simplifying file");
+      echo("Error while simplifying file : ");
+      var_dump($outputSimp);
       array_push($statusJson, [
         "file simplification" => [
           "status" => "error",
-          "progress" => "100%"
+          "message" => $outputSimp
         ]
       ]);
       $fp = fopen($STATUSARG.'/status.json', 'w');
